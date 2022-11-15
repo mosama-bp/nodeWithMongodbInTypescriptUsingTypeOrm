@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express'
-import { DataSource } from 'typeorm'
 import { SECRET_KEY } from '../config'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
@@ -21,6 +20,8 @@ interface UserData {
 export const postLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password }: Credentials = req.body
+        const manager = getManager(); 
+const result = await manager.findOne(Student, { id:1 });
         const user = await DataSource.manager.findOneBy(User, { email })
         if (!user) {
             return res.status(422).json({

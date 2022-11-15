@@ -1,7 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-// const mongoose = require('mongoose');
+import { dataSource } from './connection';
 
 dotenv.config();
 
@@ -9,16 +9,12 @@ const app: Express = express();
 
 // mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.CLUSTER_URL}/${process.env.COLLECTION_NAME}?retryWrites=true&w=majority`)
 
-// mongoose.Promise = global.Promise;
-
-// const db = mongoose.connection;
-// db.once('open', () => {
-//     console.log("Connected to mongoDB")
-// })
-
-// db.on('error', () => {
-//     console.log("Get errors while connected to mongoDB");
-// })
+dataSource.initialize().then(() => {
+    console.log("Connected to mongodb")
+})
+.catch((err) => {
+    console.error("Get errors while connected to mongoDB", err)
+})
 
 app.use(cors({
     credentials: true
@@ -52,7 +48,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next(error)
 })
 
-const port: number =  Number(process.env.PORT) || 3001
+const port: number = Number(process.env.PORT) || 3001
 
 app.listen(port, () => {
     console.log("Server has started on port " + port)
