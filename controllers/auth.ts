@@ -3,7 +3,9 @@ import { SECRET_KEY } from '../config'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-let User = { findOne: (e) => e, name:"mor" }
+import { createCsrfToken } from '../middlewares/csrfToken'
+import { dataSource } from '../connection'
+import { User } from '../entities/user'
 
 interface Credentials {
     email: string;
@@ -11,22 +13,21 @@ interface Credentials {
 }
 
 interface UserData {
-    firstName: string, 
-    lastName: string, 
-    email: string, 
-    password: any 
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: any
 }
 
 export const postLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password }: Credentials = req.body
-        const manager = getManager(); 
-const result = await manager.findOne(Student, { id:1 });
-        const user = await DataSource.manager.findOneBy(User, { email })
+        const userRepository = dataSource.getRepository(User)
+        const user = await userRepository.findOneBy({ email })
         if (!user) {
             return res.status(422).json({
                 message: 'Invalid email'
-            });
+            })
         }
         const matchPass = await bcrypt.compare(password, user.password)
         if (!matchPass) {
@@ -37,7 +38,7 @@ const result = await manager.findOne(Student, { id:1 });
         if (matchPass) {
             const token = jwt.sign({
                 email: user.email,
-                _id: user._id,
+                id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName
             },
@@ -45,10 +46,12 @@ const result = await manager.findOne(Student, { id:1 });
                 {
                     expiresIn: "7d"
                 }
-            );
+            )
+            const csrfToken = createCsrfToken()
             return res.status(200).json({
                 message: "Login successfully",
-                token
+                token,
+                csrfToken
             })
         }
     }
@@ -63,28 +66,20 @@ const result = await manager.findOne(Student, { id:1 });
 export const postRegister = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { firstName, lastName, email, password }: UserData = req.body
-        const checkUser = await User.findOne({ email })
+        const userRepository = dataSource.getRepository(User)
+        const checkUser = await userRepository.findOneBy({ email })
         if (checkUser) {
             return res.status(401).json({
                 message: "E-Mail exists already, please try with a new one."
             })
         }
-        // const bufferToken = crypto.randomBytes(32, (err, buffer) => {
-        //     if (err) {
-        //         return res.status(500).json({
-        //             message: "Getting error while generating token"
-        //         })
-        //     }
-        //     token = buffer.toString('hex');
-        // })
         const hashedPassword = await bcrypt.hash(password, 12)
-        const user = new User({
-            firstName,
-            lastName,
-            email,
-            password: hashedPassword,
-        });
-        await user.save()
+        const user = new User()
+        user.firstName = firstName
+        user.lastName = lastName
+        user.email = email
+        user.password = hashedPassword
+        await userRepository.save(user)
         return res.status(200).json({
             message: "Successfully registered!"
         })

@@ -42,4 +42,4 @@ router.post('/register',
     },
     postRegister);
 
-module.exports = router;
+export default router

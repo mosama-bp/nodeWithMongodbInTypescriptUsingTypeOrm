@@ -2,6 +2,8 @@ import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import { dataSource } from './connection';
+import authRoutes from './routes/auth';
+import { initCsrfToken } from './middlewares/csrfToken';
 
 dotenv.config();
 
@@ -16,6 +18,7 @@ dataSource.initialize().then(() => {
     console.error("Get errors while connected to mongoDB", err)
 })
 
+initCsrfToken()
 app.use(cors({
     credentials: true
 }))
@@ -23,8 +26,6 @@ app.use(cors({
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// const authRoutes = require('./routes/auth');
-// const categoryRoutes = require('./routes/category');
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.header("Access-Control-Allow-Origin", '*');
@@ -39,14 +40,14 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 })
 
-// app.use('/api', authRoutes);
+app.use('/api', authRoutes);
 // app.use('/api/category', categoryRoutes);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-    const error = new Error("Not Found");
-    res.status(404);
-    next(error)
-})
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//     const error = new Error("Not Found");
+//     res.status(404);
+//     next(error)
+// })
 
 const port: number = Number(process.env.PORT) || 3001
 

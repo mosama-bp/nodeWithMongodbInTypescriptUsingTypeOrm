@@ -12,7 +12,6 @@ export const {
   MONGO_USER,
   MONGO_PASSWORD,
   CLUSTER_URL,
-  COLLECTION_NAME,
   SECRET_KEY
 } = process.env as {
   [key: string]: string;
