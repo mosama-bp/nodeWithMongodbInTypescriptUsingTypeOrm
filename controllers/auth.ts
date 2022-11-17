@@ -8,8 +8,8 @@ import { dataSource } from '../connection'
 import { User } from '../entities/user'
 
 interface Credentials {
-    email: string;
-    password: any;
+    email: string,
+    password: any,
 }
 
 interface UserData {

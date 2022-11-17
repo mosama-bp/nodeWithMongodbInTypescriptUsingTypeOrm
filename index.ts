@@ -1,15 +1,15 @@
+// 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
 import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import { dataSource } from './connection';
 import authRoutes from './routes/auth';
+import postRoutes from './routes/post';
 import { initCsrfToken } from './middlewares/csrfToken';
 
 dotenv.config();
 
 const app: Express = express();
-
-// mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.CLUSTER_URL}/${process.env.COLLECTION_NAME}?retryWrites=true&w=majority`)
 
 dataSource.initialize().then(() => {
     console.log("Connected to mongodb")
@@ -41,13 +41,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 })
 
 app.use('/api', authRoutes);
-// app.use('/api/category', categoryRoutes);
+app.use('/api/post', postRoutes);
 
-// app.use((req: Request, res: Response, next: NextFunction) => {
-//     const error = new Error("Not Found");
-//     res.status(404);
-//     next(error)
-// })
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const error = new Error("Not Found");
+    res.status(404);
+    next(error)
+})
 
 const port: number = Number(process.env.PORT) || 3001
 
