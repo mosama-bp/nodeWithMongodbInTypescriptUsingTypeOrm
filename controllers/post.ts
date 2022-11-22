@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { Post } from '../entities/post'
 import { dataSource } from '../connection'
 import { ObjectID } from 'typeorm'
+import { getDetail } from '../middlewares/checkAuth'
 
 interface PostData {
     text: string,
@@ -12,14 +13,15 @@ const postRepository = dataSource.getRepository(Post)
 
 export const addPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const userId = await getDetail(req, res, next)
         const { text, description }: PostData = req.body
         const post = new Post()
         post.text = text
         post.description = description
         const result = await postRepository.save(post)
-        console.log({ result })
         return res.status(201).json({
             message: "Post has been added successfully",
+            result
         })
     }
     catch (error) {

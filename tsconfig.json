@@ -9,12 +9,12 @@
         "experimentalDecorators": true,
         "target": "es6",
         "outDir": "./dist",
-        "baseUrl": "./lib"
+        "baseUrl": "./lib",
+        "typeRoots": [
+            "./types",
+            "./node_modules/@types"
+        ]
     },
-    "include": [
-        "lib/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules"]
 }

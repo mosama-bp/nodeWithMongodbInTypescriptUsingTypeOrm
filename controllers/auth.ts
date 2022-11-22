@@ -3,7 +3,7 @@ import { SECRET_KEY } from '../config'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { createCsrfToken } from '../middlewares/csrfToken'
+// import { createCsrfToken } from '../middlewares/csrfToken'
 import { dataSource } from '../connection'
 import { User } from '../entities/user'
 
@@ -47,11 +47,13 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
                     expiresIn: "7d"
                 }
             )
-            const csrfToken = createCsrfToken()
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            // const csrfToken = createCsrfToken()
             return res.status(200).json({
                 message: "Login successfully",
                 token,
-                csrfToken
+                // csrfToken
             })
         }
     }

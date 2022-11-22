@@ -1,16 +1,19 @@
-import { Request, Response, NextFunction, Router } from 'express'
+import { Router } from 'express'
+import { nextTick } from 'process'
 import { addPost, getAllPosts, getPostById, updatePostById, deletePostById } from '../controllers/post'
+import { verifyJWT } from '../middlewares/checkAuth'
+import { verifyCsrfToken } from '../middlewares/csrfToken'
 
-const router = Router();
+const router = Router()
 
-router.post('/', addPost);
+router.post('/', verifyJWT, addPost)
 
-router.get('/', getAllPosts);
+router.get('/', verifyJWT, getAllPosts)
 
-router.get('/:id', getPostById);
+router.get('/:id', verifyJWT, getPostById)
 
-router.patch('/', updatePostById)
+router.patch('/', verifyJWT, updatePostById)
 
-router.delete('/:id', deletePostById)
+router.delete('/:id', verifyJWT, deletePostById)
 
-export default router;
+export default router
