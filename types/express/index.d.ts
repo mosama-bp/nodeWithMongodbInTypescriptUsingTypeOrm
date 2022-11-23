@@ -4,6 +4,7 @@ declare global {
   namespace Express {
     interface Request {
       id?: Record<string,any>
+      csrftoken: any
     }
   }
 }

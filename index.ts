@@ -6,12 +6,16 @@ import session from 'express-session'
 import { dataSource } from './connection';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/post';
-// import { initCsrfToken } from './middlewares/csrfToken';
 import csrf from 'csurf';
 
 dotenv.config();
 
 const app: Express = express();
+
+const csrfProtection = csrf()
+app.use(cors({
+    credentials: true
+}))
 
 dataSource.initialize()
     .then(() => {
@@ -21,21 +25,15 @@ dataSource.initialize()
         console.error("Get errors while connected to mongoDB", err)
     })
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-// initCsrfToken()
-app.set('trust proxy', 1) // trust first proxy
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+
+app.set('trust proxy', 1)
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    // cookie: { secure: true }
 }))
-const csrfProtection = csrf();
-app.use(cors({
-    credentials: true
-}))
-
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.header("Access-Control-Allow-Origin", '*');
@@ -50,35 +48,26 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 })
 
-console.log('hi')
-
 app.use('/api', authRoutes);
 app.use(csrfProtection);
 app.use((req: Request, res: Response, next: NextFunction) => {
-    console.log('h', { 'session': req.session }, req.session.isLoggedIn, req.session.user)
+    // console.log(req.session, req.csrfToken(), 'k')
     res.locals.isAuthenticated = req.session.isLoggedIn;
-    res.locals.csrfToken = req.csrfToken();
+    // res.locals.csrfToken = req.csrfToken();
     next();
 });
+
 
 app.use((req, res, next) => {
-    console.log(req.session)
-    if (!req.session.user) {
-        return next();
+    console.log(req.session, req.csrfToken(), req.csrftoken)
+    if (!req.session.user && !req.session.isLoggedIn) {
+        return res.status(500).json({
+            message: "Something went wrong!",
+            isLogin: req.session.isLoggedIn ? true : false
+        })
     }
-    // User.findById(req.session.user._id)
-    //   .then(user => {
-    // if (!user) {
-    //   return next();
-    // }
-    // req.user = user;
-    next();
-    //   })
-    //   .catch(err => {
-    // next(new Error(err));
-    //   });
-
-});
+    next()
+})
 
 app.use('/api/post', postRoutes);
 

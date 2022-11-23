@@ -47,8 +47,12 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
                     expiresIn: "7d"
                 }
             )
+            // console.log(req.csrfToken, req)
             req.session.isLoggedIn = true;
             req.session.user = user;
+            // console.log("hi", req)
+            // req.cookies.csrfToken = req.csrfToken()
+            // console.log({req: req.session})
             // const csrfToken = createCsrfToken()
             return res.status(200).json({
                 message: "Login successfully",
