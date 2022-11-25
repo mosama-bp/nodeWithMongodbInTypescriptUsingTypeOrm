@@ -8,3 +8,9 @@ declare global {
     }
   }
 }
+
+// export interface CustomRequest extends Request {
+//   token: string | JwtPayload;
+// }
+
+// (req as CustomRequest).token = decoded;

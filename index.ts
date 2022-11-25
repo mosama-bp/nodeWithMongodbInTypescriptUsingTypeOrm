@@ -1,4 +1,4 @@
-// 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
+// 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
 import express, { Express, Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -13,6 +13,7 @@ dotenv.config();
 const app: Express = express();
 
 const csrfProtection = csrf()
+
 app.use(cors({
     credentials: true
 }))
@@ -48,7 +49,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 })
 
-app.use('/api', authRoutes);
+app.use('/api', authRoutes)
 app.use(csrfProtection);
 app.use((req: Request, res: Response, next: NextFunction) => {
     // console.log(req.session, req.csrfToken(), 'k')
@@ -56,7 +57,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     // res.locals.csrfToken = req.csrfToken();
     next();
 });
-
 
 app.use((req, res, next) => {
     console.log(req.session, req.csrfToken(), req.csrftoken)

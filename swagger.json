@@ -1,0 +1,137 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "APIs Documentation",
+		"version": "1.0.0",
+		"title": "Project Title"
+	},
+	"host": "localhost:8000",
+	"basePath": "/api",
+
+	"securityDefinitions": {
+		"Bearer": {
+			"type": "apiKey",
+			"in": "header",
+			"name": "Authorization"
+		}
+	},
+	"tags": [{
+			"name": "auth"
+		},
+		{
+			"name": "user"
+		},
+		{
+			"name": "role"
+		},
+		{
+			"name": "company"
+		},
+		{
+			"name": "campaign"
+		},
+		{
+			"name": "attachment"
+		},
+		{
+			"name": "invoice"
+		},
+		{
+			"name": "notification"
+		}
+	],
+	"schemes": ["https"],
+	"paths": {
+		"/attachment/": {
+			"get": {
+				"tags": ["attachment"],
+				"summary": "get all attachment",
+				"description": "",
+				"operationId": "get all attachment",
+				"produces": ["application/json"],
+				"parameters": [],
+				"security": [{
+					"Bearer": []
+				}],
+				"responses": {
+					"200": {
+						"description": "message: Successfully get all the images, status: true, result: images data"
+					}
+				}
+			}
+		},
+		"/attachment/add": {
+			"post": {
+				"tags": ["attachment"],
+				"summary": "Add attachment",
+				"description": "",
+				"operationId": "Add attachment",
+				"produces": ["form data"],
+				"parameters": [{
+					"name": "image",
+					"required": true,
+					"type": "image"
+				}],
+				"security": [{
+					"Bearer": []
+				}],
+				"responses": {
+					"201": {
+						"description": "message: Image uploaded successfully, status: true, result: image data"
+					}
+				}
+			}
+		},
+		"/attachment/{id}": {
+			"delete": {
+				"tags": ["attachment"],
+				"summary": "Delete an attachment by id",
+				"description": "Delete an attachment by id",
+				"operationId": "delete an attachment",
+				"produces": ["application/json"],
+				"parameters": [{
+					"in": "path",
+					"name": "id",
+					"required": true
+				}],
+				"security": [{
+					"Bearer": []
+				}],
+				"responses": {
+					"200": {
+						"description": "message: Image deleted successfully, status: true"
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"200": {
+			"type": "object",
+			"properties": {
+				"message": {
+					"type": "string"
+				},
+				"status": {
+					"type": "boolean",
+					"default": true
+				},
+				"result": {
+					"type": "object"
+				}
+			}
+		},
+		"401": {
+			"type": "object",
+			"properties": {
+				"message": {
+					"type": "string"
+				},
+				"status": {
+					"type": "boolean",
+					"default": false
+				}
+			}
+		}
+	}
+}
